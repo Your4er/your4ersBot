@@ -1,0 +1,226 @@
+import os
+from urllib import response
+import telebot
+from telebot import types
+import tempfile
+import requests
+import json
+from PIL import Image
+import subprocess
+from PIL import ImageGrab
+
+
+API_TOKEN = '6731928465:AAHikUIsoLsuCEF6K94dmgB6eiouBGsW90s'
+APIKEY = '7f5d868011ad2e1914e219f7b1d8495f'
+
+  
+bot = telebot.TeleBot(API_TOKEN)
+
+def is_allowed_user(message):
+    return message.from_user.username in ['your4er', 'lara_litch']  
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+    if is_allowed_user(message):
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('Получить скриншот')
+        item2 = types.KeyboardButton('Выключить')
+        item3 = types.KeyboardButton('Погода')
+        item4 = types.KeyboardButton('Кое-что открыть')
+        markup.add(item1,item2,item3,item4)
+        bot.send_message(message.chat.id, 'Доброго времени суток, что желаете?', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+# =======================Скрин=======================
+@bot.message_handler(regexp='Получить скриншот')
+def echo_message(message):
+    if is_allowed_user(message):
+        path = tempfile.gettempdir() + 'screenshot.png'
+        screenshot = ImageGrab.grab()
+        screenshot.save(path, 'PNG')
+        bot.send_photo(message.chat.id, open(path, 'rb'))
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+# =======================Погода=======================
+@bot.message_handler(regexp='Погода')
+def echo_message(message):
+    if is_allowed_user(message):
+        resss = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={"Nizhniy Novgorod"}&lang=ru&appid={APIKEY}&units=metric',timeout=None)
+        data=json.loads(resss.text)
+        weatherdesc = data['weather'][0]['description']
+        bot.reply_to(message, f'Погода в городе {data["name"]}: {round(data["main"]["temp"])}cº. На небе: {weatherdesc}. Чувствуется как: {round(data["main"]["feels_like"])}cº')
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+# =======================Открытие файлов=======================
+@bot.message_handler(regexp='Кое-что открыть')
+def echo_message(message):
+    if is_allowed_user(message):
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('Открыть файл для записи')
+        item2 = types.KeyboardButton('Открыть игору Кала Варзоне')
+        item3 = types.KeyboardButton('Открыть игору Тундра')
+        item4 = types.KeyboardButton('Открыть игору Радуга')
+        back = types.KeyboardButton('Назад')
+        markup.add(item1,item2,item3,item4,back)
+        bot.send_message(message.chat.id, 'Выбирай что открыть', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Открыть файл для записи')
+def turn_off(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Открываю..')
+        file_path = "D:\\Gamez\\CHDNotes.docx"
+        subprocess.Popen(['start', file_path], shell=True)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Открыть игору Кала Варзоне')
+def turn_off(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Открываю..')
+        file_path = "D:\\Gamez\\Call of Duty®.url"
+        os.startfile(file_path)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Открыть игору Тундра')
+def turn_off(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Открываю..')
+        file_path = "D:\\Gamez\\War Thunder.url"
+        os.startfile(file_path)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Открыть игору Радуга')
+def turn_off(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Открываю..')
+        file_path = "D:\\Gamez\\Tom Clancy's Rainbow Six Siege.url"
+        os.startfile(file_path)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+# =======================Возвращение=======================
+@bot.message_handler(regexp='Назад')
+def send_welcome(message):
+    if is_allowed_user(message):
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('Получить скриншот')
+        item2 = types.KeyboardButton('Выключить')
+        item3 = types.KeyboardButton('Погода')
+        item4 = types.KeyboardButton('Кое-что открыть')
+        markup.add(item1,item2,item3,item4)
+        bot.send_message(message.chat.id, 'Доброго времени суток, что желаете?', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+# =======================Выключение=======================
+@bot.message_handler(regexp='выключить')
+def echo_message(message):
+    if is_allowed_user(message):
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('Да, можно')
+        item2 = types.KeyboardButton('Через время...')
+        item3 = types.KeyboardButton('Не надо')
+        markup.add(item1,item2,item3)
+        bot.send_message(message.chat.id, 'Вы уверены?', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Не надо')
+def send_welcome(message):
+    if is_allowed_user(message):
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('Получить скриншот')
+        item2 = types.KeyboardButton('Выключить')
+        item3 = types.KeyboardButton('Погода')
+        item4 = types.KeyboardButton('Кое-что открыть')
+        markup.add(item1,item2,item3,item4)
+        bot.send_message(message.chat.id, 'Доброго времени суток, что желаете?', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Да, можно')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Выключаю...')
+        os.system("shutdown -s -t 0")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Через время...')
+def send_welcome(message):
+    if is_allowed_user(message):
+        markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
+        item1 = types.KeyboardButton('15_мин')
+        item2 = types.KeyboardButton('30_мин')
+        item3 = types.KeyboardButton('45_мин')
+        item4 = types.KeyboardButton('60_мин')
+        item5 = types.KeyboardButton('2_часа')
+        item6 = types.KeyboardButton('Отмена таймера')
+        back = types.KeyboardButton('Назад')
+        markup.add(item1,item2,item3,item4,item5,item6,back)
+        bot.send_message(message.chat.id, 'Через сколько?', reply_markup=markup)
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='15_мин')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Хорошо, выключу через 15 минут...')
+        os.system("shutdown -s -t 900")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='30_мин')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Хорошо, выключу через 30 минут...')
+        os.system("shutdown -s -t 1800")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='45_мин')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Хорошо, выключу через 45 минут...')
+        os.system("shutdown -s -t 2700")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='60_мин')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Хорошо, выключу через 60 минут...')
+        os.system("shutdown -s -t 3600")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='2_часа')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Хорошо, выключу через 2 часа...')
+        os.system("shutdown -s -t 7200")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+@bot.message_handler(regexp='Отмена таймера')
+def send_welcome(message):
+    if is_allowed_user(message):
+        bot.send_message(message.chat.id, 'Отключаю таймер.')
+        os.system("shutdown /a")
+        
+    else:
+        bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
+
+
+bot.infinity_polling()
