@@ -9,6 +9,26 @@ from PIL import Image
 import subprocess
 from PIL import ImageGrab
 
+weather_translations = {
+    'Thunderstorm': 'Гроза',
+    'Drizzle': 'Морось',
+    'Rain': 'Дождь',
+    'Snow': 'Снег',
+    'Mist':'Туман',
+    'Smoke':'Дым',
+    'Haze':'Дымка',
+    'Dust':'Пыль',
+    'Fog':'Туман',
+    'Sand':'Песчаная буря',
+    'Dust':'Пыль',
+    'Ash':'Пепел',
+    'Squall':'Штормовой ветер',
+    'Tornado':'Торнадо',
+    'Clear': 'Ни облачка',
+    'Clouds': 'Облачно',
+    
+    
+}
 
 API_TOKEN = '6731928465:AAHikUIsoLsuCEF6K94dmgB6eiouBGsW90s'
 APIKEY = '7f5d868011ad2e1914e219f7b1d8495f'
@@ -48,8 +68,29 @@ def echo_message(message):
     if is_allowed_user(message):
         resss = requests.get(f'https://api.openweathermap.org/data/2.5/weather?q={"Nizhniy Novgorod"}&lang=ru&appid={APIKEY}&units=metric',timeout=None)
         data=json.loads(resss.text)
-        weatherdesc = data['weather'][0]['description']
-        bot.reply_to(message, f'Погода в городе {data["name"]}: {round(data["main"]["temp"])}cº. На небе: {weatherdesc}. Чувствуется как: {round(data["main"]["feels_like"])}cº')
+        weather_desc = data['weather'][0]['description']
+        weather_main = data['weather'][0]['main']
+
+        weathermain_translated = weather_translations.get(weather_main, weather_main)  
+
+        precipitation = data['weather'][0]['id']
+        bot.reply_to(message, f'Погода в городе <b>{data["name"]}</b>: <u>{round(data["main"]["temp"])}</u> cº. \nЧувствуется как: <u>{round(data["main"]["feels_like"])}</u> cº . \nПогодные условия: <u> {weathermain_translated}</u>, <u> {weather_desc}</u>. ', parse_mode='HTML')
+        if precipitation >= 800:
+            image = 'C:/Users/Your4er/Desktop/test/800.png'  
+        elif 200 <= precipitation < 300: 
+            image = 'C:/Users/Your4er/Desktop/test/200.png'  
+        elif 300 <= precipitation < 500:  
+            image = 'C:/Users/Your4er/Desktop/test/300.png'  
+        elif 500 <= precipitation < 600:  
+            image = 'C:/Users/Your4er/Desktop/test/500.png'  
+        elif 600 <= precipitation < 700:  
+            image = 'C:/Users/Your4er/Desktop/test/600.png'
+        elif 700 <= precipitation < 800:  
+            image = 'C:/Users/Your4er/Desktop/test/700.png'       
+        else:  
+            image = 'C:/Users/Your4er/Desktop/test/default.png'  
+        with open(image, 'rb') as file:
+            bot.send_photo(message.chat.id, file)
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
@@ -59,8 +100,8 @@ def echo_message(message):
     if is_allowed_user(message):
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton('Открыть файл для записи')
-        item2 = types.KeyboardButton('Открыть игору Кала Варзоне')
-        item3 = types.KeyboardButton('Открыть игору Тундра')
+        item2 = types.KeyboardButton('Открыть Хром')
+        item3 = types.KeyboardButton('Открыть Ядыкс')
         item4 = types.KeyboardButton('Открыть игору Радуга')
         back = types.KeyboardButton('Назад')
         markup.add(item1,item2,item3,item4,back)
@@ -77,20 +118,20 @@ def turn_off(message):
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
-@bot.message_handler(regexp='Открыть игору Кала Варзоне')
+@bot.message_handler(regexp='Открыть Хром')
 def turn_off(message):
     if is_allowed_user(message):
         bot.send_message(message.chat.id, 'Открываю..')
-        file_path = "D:\\Gamez\\Call of Duty®.url"
+        file_path = "D:\\Gamez\\Chrome.lnk"
         os.startfile(file_path)
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
-@bot.message_handler(regexp='Открыть игору Тундра')
+@bot.message_handler(regexp='Открыть Ядыкс')
 def turn_off(message):
     if is_allowed_user(message):
         bot.send_message(message.chat.id, 'Открываю..')
-        file_path = "D:\\Gamez\\War Thunder.url"
+        file_path = "D:\\Gamez\\Yandex.lnk"
         os.startfile(file_path)
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
@@ -123,7 +164,7 @@ def echo_message(message):
     if is_allowed_user(message):
         markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
         item1 = types.KeyboardButton('Да, можно')
-        item2 = types.KeyboardButton('Через время...')
+        item2 = types.KeyboardButton('Таймер')
         item3 = types.KeyboardButton('Не надо')
         markup.add(item1,item2,item3)
         bot.send_message(message.chat.id, 'Вы уверены?', reply_markup=markup)
@@ -152,7 +193,7 @@ def send_welcome(message):
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
-@bot.message_handler(regexp='Через время...')
+@bot.message_handler(regexp='Таймер')
 def send_welcome(message):
     if is_allowed_user(message):
         markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -161,7 +202,7 @@ def send_welcome(message):
         item3 = types.KeyboardButton('45_мин')
         item4 = types.KeyboardButton('60_мин')
         item5 = types.KeyboardButton('2_часа')
-        item6 = types.KeyboardButton('Отмена таймера')
+        item6 = types.KeyboardButton('Отменить')
         back = types.KeyboardButton('Назад')
         markup.add(item1,item2,item3,item4,item5,item6,back)
         bot.send_message(message.chat.id, 'Через сколько?', reply_markup=markup)
@@ -213,7 +254,7 @@ def send_welcome(message):
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
-@bot.message_handler(regexp='Отмена таймера')
+@bot.message_handler(regexp='Отменить')
 def send_welcome(message):
     if is_allowed_user(message):
         bot.send_message(message.chat.id, 'Отключаю таймер.')
