@@ -30,14 +30,18 @@ weather_translations = {
     
 }
 
+# =======================Апи=======================
 API_TOKEN = '6731928465:AAHikUIsoLsuCEF6K94dmgB6eiouBGsW90s'
 APIKEY = '7f5d868011ad2e1914e219f7b1d8495f'
 
   
 bot = telebot.TeleBot(API_TOKEN)
 
+# =======================Достуцпные пользователи=======================
 def is_allowed_user(message):
-    return message.from_user.username in ['your4er', 'lara_litch']  
+    return message.from_user.username in ['your4er', 'lara_litch'] 
+
+# =======================Меню кнопок=======================     
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     if is_allowed_user(message):
@@ -159,7 +163,7 @@ def send_welcome(message):
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 # =======================Выключение=======================
-@bot.message_handler(regexp='выключить')
+@bot.message_handler(regexp='Выключить')
 def echo_message(message):
     if is_allowed_user(message):
         markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -193,6 +197,7 @@ def send_welcome(message):
     else:
         bot.send_message(message.chat.id, 'У вас нет доступа к этому боту')
 
+# =======================Сам таймер=======================
 @bot.message_handler(regexp='Таймер')
 def send_welcome(message):
     if is_allowed_user(message):
